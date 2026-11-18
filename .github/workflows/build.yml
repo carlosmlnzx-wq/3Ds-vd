@@ -1,3 +1,4 @@
+
 name: Build
 on: workflow_dispatch
 jobs:
@@ -18,9 +19,14 @@ jobs:
       - name: Build
         working-directory: src
         run: make -j2 3dsx
+      - name: Verify output
+        run: |
+          test -f src/JKVIDEOS.3dsx
+          ls -lh src/JKVIDEOS.3dsx src/JKVIDEOS.smdh
       - uses: actions/upload-artifact@v4
         with:
-          name: CTR-Video-Player-3DSX
+          name: JKVIDEOS-3DSX
           path: |
-            src/CTR_Video_Player.3dsx
-            src/CTR_Video_Player.smdh
+            src/JKVIDEOS.3dsx
+            src/JKVIDEOS.smdh
+          if-no-files-found: error
