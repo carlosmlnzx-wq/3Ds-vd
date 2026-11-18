@@ -3,25 +3,21 @@ on: workflow_dispatch
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: devkitpro/devkitarm
     steps:
       - uses: actions/checkout@v4
       - name: Unzip
-        run: unzip -q proyecto.zip -d src
-      - name: Install devkitPro
         run: |
-          wget -q https://apt.devkitpro.org/install-devkitpro-pacman
-          chmod +x install-devkitpro-pacman
-          sudo ./install-devkitpro-pacman
-          sudo dkp-pacman -Syu --noconfirm
-          sudo dkp-pacman -S --noconfirm 3ds-dev
+          apt-get update
+          apt-get install -y unzip
+          unzip -q proyecto.zip -d src
+      - name: Install 3DS tools
+        run: |
+          dkp-pacman -Syu --noconfirm
+          dkp-pacman -S --noconfirm 3ds-dev
       - name: Build
         working-directory: src
-        run: |
-          source /etc/profile.d/devkit-env.sh
-          export DEVKITPRO=/opt/devkitpro
-          export DEVKITARM="$DEVKITPRO/devkitARM"
-          export PATH="$DEVKITPRO/tools/bin:$PATH"
-          make -j2 3dsx
+        run: make -j2 3dsx
       - uses: actions/upload-artifact@v4
         with:
           name: CTR-Video-Player-3DSX
